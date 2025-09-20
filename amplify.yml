@@ -3,18 +3,14 @@ frontend:
   phases:
     preBuild:
       commands:
-        - nvm install 20
-        - nvm use 20
-        - cd grammie-frontend
         - npm install
     build:
       commands:
-        - cd grammie-frontend
-        - npm run build --verbose
+        - npm run build
   artifacts:
-    baseDirectory: grammie-frontend/build
+    baseDirectory: build
     files:
       - '**/*'
   cache:
     paths:
-      - grammie-frontend/node_modules/**/*
+      - node_modules/**/*
