@@ -1,0 +1,19 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - cd grammie-frontend
+        - npm install
+    build:
+      commands:
+        - cd grammie-frontend
+        - npm run build
+  artifacts:
+    baseDirectory: grammie-frontend/build
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - grammie-frontend/node_modules/**/*
+
