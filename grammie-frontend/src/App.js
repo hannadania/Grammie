@@ -1,22 +1,30 @@
-import logo from './logo.svg';
 import './App.css';
 
 function App() {
+  // Simple dictionary data - just a few words to start
+  const dictionary = [
+    { word: "rumah", meaning: "house", language: "Malay" },
+    { word: "air", meaning: "water", language: "Malay" },
+    { word: "makan", meaning: "eat", language: "Malay" },
+    { word: "jalan", meaning: "walk/road", language: "Malay" }
+  ];
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <h1>🌿 Grammie Dictionary</h1>
+        <p>Digital Dictionary for Orang Asli Languages</p>
+        
+        <div className="dictionary">
+          <h2>Word List</h2>
+          {dictionary.map((entry, index) => (
+            <div key={index} className="word-entry">
+              <h3>{entry.word}</h3>
+              <p><strong>Meaning:</strong> {entry.meaning}</p>
+              <p><strong>Language:</strong> {entry.language}</p>
+            </div>
+          ))}
+        </div>
       </header>
     </div>
   );

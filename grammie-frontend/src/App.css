@@ -1,20 +1,10 @@
 .App {
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+  font-family: 'Arial', sans-serif;
 }
 
 .App-header {
-  background-color: #282c34;
+  background: linear-gradient(135deg, #2c5530, #4a7c59);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -22,17 +12,51 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  padding: 20px;
 }
 
-.App-link {
-  color: #61dafb;
+.App-header h1 {
+  margin-bottom: 10px;
+  font-size: 3rem;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.App-header p {
+  margin-bottom: 30px;
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.dictionary {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 30px;
+  max-width: 600px;
+  width: 100%;
+  backdrop-filter: blur(10px);
+}
+
+.dictionary h2 {
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.word-entry {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 15px;
+  margin: 15px 0;
+  text-align: left;
+  border-left: 4px solid #4a7c59;
+}
+
+.word-entry h3 {
+  margin: 0 0 10px 0;
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.word-entry p {
+  margin: 5px 0;
+  font-size: 1rem;
+  opacity: 0.9;
 }
