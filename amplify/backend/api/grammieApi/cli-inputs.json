@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/grsmmie": {
+      "name": "/grsmmie",
+      "lambdaFunction": "grammieLambda",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

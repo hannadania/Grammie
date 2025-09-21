@@ -1,0 +1,10 @@
+{
+  "resourceName": "grammieDynamoDB",
+  "tableName": "grammieDynamoDBTable",
+  "partitionKey": {
+    "fieldName": "demiar",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}

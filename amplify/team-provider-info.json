@@ -1,0 +1,29 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-grammie-dev-dd4a6-authRole",
+      "UnauthRoleArn": "arn:aws:iam::777555685714:role/amplify-grammie-dev-dd4a6-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::777555685714:role/amplify-grammie-dev-dd4a6-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-grammie-dev-dd4a6-deployment",
+      "UnauthRoleName": "amplify-grammie-dev-dd4a6-unauthRole",
+      "StackName": "amplify-grammie-dev-dd4a6",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:777555685714:stack/amplify-grammie-dev-dd4a6/65a559e0-960a-11f0-9e0e-022dd01baa73",
+      "AmplifyAppId": "dnu920rcb9l7w"
+    },
+    "categories": {
+      "function": {
+        "grammieLambda": {
+          "deploymentBucketName": "amplify-grammie-dev-dd4a6-deployment",
+          "s3Key": "amplify-builds/grammieLambda-6c6941536f57354e5646-build.zip"
+        }
+      },
+      "storage": {
+        "grammieDynamoDB": {}
+      },
+      "api": {
+        "grammieApi": {}
+      }
+    }
+  }
+}
