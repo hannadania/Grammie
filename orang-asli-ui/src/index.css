@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-background-color: #ff8272;
+  --color-primary-dark-brown: #352423;
+  --color-chatbot-heading-color: #8b4513;
+  --color-primary-light-brown: #4f3c3a;
+}

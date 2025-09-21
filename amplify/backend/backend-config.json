@@ -16,6 +16,11 @@
     }
   },
   "function": {
+    "bedrockFunction": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "grammieLambda": {
       "build": true,
       "dependsOn": [
@@ -37,6 +42,22 @@
     }
   },
   "parameters": {
+    "AMPLIFY_function_bedrockFunction_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "bedrockFunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_bedrockFunction_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "bedrockFunction"
+        }
+      ]
+    },
     "AMPLIFY_function_grammieLambda_deploymentBucketName": {
       "usedBy": [
         {

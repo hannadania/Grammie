@@ -15,7 +15,11 @@
       "function": {
         "grammieLambda": {
           "deploymentBucketName": "amplify-grammie-dev-dd4a6-deployment",
-          "s3Key": "amplify-builds/grammieLambda-2f4e393374666d717834-build.zip"
+          "s3Key": "amplify-builds/grammieLambda-4f764b6730586c305865-build.zip"
+        },
+        "bedrockFunction": {
+          "deploymentBucketName": "amplify-grammie-dev-dd4a6-deployment",
+          "s3Key": "amplify-builds/bedrockFunction-4569616a75745855314c-build.zip"
         }
       },
       "storage": {

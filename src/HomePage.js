@@ -83,6 +83,36 @@ function HomePage({ onStartApp }) {
     }
   };
 
+  // Bedrock chat function
+  const startBedrockChat = async () => {
+    try {
+      console.log("Starting Bedrock chat...");
+      
+      const response = await fetch(
+        "https://q17d7ggx54.execute-api.ap-southeast-1.amazonaws.com/dev/grsmmie/bedrock-chat",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prompt: "Hello! Can you help me learn about the Temiar language?"
+          }),
+        }
+      );
+
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const data = await response.json();
+      console.log("Bedrock response:", data);
+      alert(`Bedrock says: ${data.message}`);
+      
+    } catch (error) {
+      console.error("Error with Bedrock chat:", error);
+      alert("Error with Bedrock chat. Check console.");
+    }
+  };
+
   return (
     <div className="App">
       <h1>Welcome to Grammie</h1>
@@ -96,6 +126,7 @@ function HomePage({ onStartApp }) {
           <button onClick={sendToDynamoDB}>Send Data</button>
           <button onClick={fetchFromDynamoDB}>Fetch Items</button>
           <button onClick={testButton}>Test Query (Numbers)</button>
+          <button onClick={startBedrockChat}>Start Bedrock Chat</button>
         </div>
 
         <div className="results">

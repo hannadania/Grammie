@@ -9,12 +9,14 @@ See the License for the specific language governing permissions and limitations 
 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, ScanCommand } = require('@aws-sdk/lib-dynamodb');
+const { BedrockRuntimeClient, InvokeModelCommand } = require("@aws-sdk/client-bedrock-runtime");
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 const bodyParser = require('body-parser')
 const express = require('express')
 
 const ddbClient = new DynamoDBClient({ region: "ap-southeast-1" });
 const ddbDocClient = DynamoDBDocumentClient.from(ddbClient);
+const bedrockClient = new BedrockRuntimeClient({ region: "us-east-1" });
 
 let tableName = "grammieDynamoDBTable";
 if (process.env.ENV && process.env.ENV !== "NONE") {
@@ -236,6 +238,46 @@ app.delete(path + '/object' + hashKeyPath + sortKeyPath, async function(req, res
   } catch (err) {
     res.statusCode = 500;
     res.json({error: err, url: req.url});
+  }
+});
+
+/************************************
+* HTTP post method for Bedrock chat *
+*************************************/
+
+app.post(path + '/bedrock-chat', async function(req, res) {
+  try {
+    const { prompt } = req.body;
+    
+    const input = {
+      modelId: "anthropic.claude-3-haiku-20240307-v1:0",
+      contentType: "application/json",
+      accept: "application/json",
+      body: JSON.stringify({
+        anthropic_version: "bedrock-2023-05-31",
+        max_tokens: 1000,
+        temperature: 0.5,
+        messages: [
+          {
+            role: "user",
+            content: prompt || "Hello, how are you?"
+          }
+        ]
+      })
+    };
+
+    const command = new InvokeModelCommand(input);
+    const response = await bedrockClient.send(command);
+    
+    const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+    
+    res.json({
+      success: 'Bedrock chat successful!',
+      message: responseBody.content[0].text
+    });
+  } catch (err) {
+    res.statusCode = 500;
+    res.json({ error: 'Bedrock chat failed: ' + err.message });
   }
 });
 
