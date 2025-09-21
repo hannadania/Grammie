@@ -15,7 +15,7 @@ function App() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            demiar: `item-${Date.now()}`, // unique primary key
+            temiar: `item-${Date.now()}`, // unique primary key
             msg: "Hello from frontend!"
           }),
         }
@@ -55,16 +55,45 @@ function App() {
     }
   };
 
+  // Test button function - Query by topic
+  const testButton = async () => {
+    try {
+      console.log("Testing query by topic...");
+      
+      // Query for words with topic "numbers"
+      const response = await fetch(
+        "https://q17d7ggx54.execute-api.ap-southeast-1.amazonaws.com/dev/grsmmie?topic=numbers",
+        {
+          method: "GET",
+        }
+      );
+
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const data = await response.json();
+      console.log("Words with topic 'numbers':", data.items);
+      
+      // Show first 3 results
+      const firstThree = data.items.slice(0, 3);
+      alert(`Found ${data.items.length} words with topic 'numbers'. First 3: ${firstThree.map(item => `${item.temiar} = ${item.english}`).join(', ')}`);
+      
+    } catch (error) {
+      console.error("Error testing query:", error);
+      alert("Error testing query. Check console.");
+    }
+  };
+
   return (
     <div className="App">
       <h1>Test DynamoDB Connection</h1>
       <button onClick={sendToDynamoDB}>Send Data</button>
       <button onClick={fetchFromDynamoDB}>Fetch Items</button>
+      <button onClick={testButton}>Test Button</button>
 
       <ul>
         {items.map((item, index) => (
           <li key={index}>
-            {item.demiar}: {item.msg}
+            {item.temiar}: {item.msg}
           </li>
         ))}
       </ul>

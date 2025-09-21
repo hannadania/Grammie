@@ -7,14 +7,13 @@ See the License for the specific language governing permissions and limitations 
 */
 
 
-
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, ScanCommand } = require('@aws-sdk/lib-dynamodb');
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 const bodyParser = require('body-parser')
 const express = require('express')
 
-const ddbClient = new DynamoDBClient({ region: process.env.TABLE_REGION });
+const ddbClient = new DynamoDBClient({ region: "ap-southeast-1" });
 const ddbDocClient = DynamoDBDocumentClient.from(ddbClient);
 
 let tableName = "grammieDynamoDBTable";
@@ -23,8 +22,8 @@ if (process.env.ENV && process.env.ENV !== "NONE") {
 }
 
 const userIdPresent = false; // TODO: update in case is required to use that definition
-const partitionKeyName = "demiar";
-const partitionKeyType = "S";
+const partitionKeyName = "PK";
+const partitionKeyType = "SK";
 const sortKeyName = "";
 const sortKeyType = "";
 const hasSortKey = sortKeyName !== "";

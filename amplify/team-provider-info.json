@@ -15,7 +15,7 @@
       "function": {
         "grammieLambda": {
           "deploymentBucketName": "amplify-grammie-dev-dd4a6-deployment",
-          "s3Key": "amplify-builds/grammieLambda-6c6941536f57354e5646-build.zip"
+          "s3Key": "amplify-builds/grammieLambda-2f4e393374666d717834-build.zip"
         }
       },
       "storage": {

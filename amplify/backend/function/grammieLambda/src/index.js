@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk");
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
-const TABLE_NAME = "grammieDynamoDBTable-dev"; // Hardcoded table name
+const TABLE_NAME = "grammieTable"; // Use your custom table
 
 exports.handler = async (event) => {
   console.log("Event received:", event);
@@ -14,8 +14,13 @@ exports.handler = async (event) => {
         .put({
           TableName: TABLE_NAME,
           Item: {
-            demiar: body.demiar,
-            msg: body.msg,
+            PK: body.PK || `TOPIC#${body.topic || 'general'}`,
+            SK: body.SK || `WORD#${Date.now()}`,
+            temiar: body.temiar || body.demiar,
+            english: body.english || body.msg,
+            topic: body.topic || 'general',
+            english_match: body.english_match || body.english || body.msg,
+            match_type: body.match_type || 'exact'
           },
         })
         .promise();
@@ -31,13 +36,44 @@ exports.handler = async (event) => {
 
     // --- GET request ---
     else if (event.httpMethod === "GET") {
-      const result = await dynamoDB
-        .scan({ TableName: TABLE_NAME }) // ✅ use TABLE_NAME env variable
-        .promise();
+      let result;
+      
+      // Check if there's a topic query parameter
+      if (event.queryStringParameters && event.queryStringParameters.topic) {
+        const topic = event.queryStringParameters.topic;
+        console.log(`Querying for topic: ${topic}`);
+        
+        // Query by topic using GSI or scan with filter
+        result = await dynamoDB
+          .scan({
+            TableName: TABLE_NAME,
+            FilterExpression: "topic = :topic",
+            ExpressionAttributeValues: {
+              ":topic": topic
+            }
+          })
+          .promise();
+      } else {
+        // No filter - get all items
+        result = await dynamoDB
+          .scan({ TableName: TABLE_NAME })
+          .promise();
+      }
+
+      // Transform the data to match your frontend expectations
+      const transformedItems = result.Items.map(item => ({
+        demiar: item.temiar || item.PK || 'unknown',
+        msg: item.english || item.english_match || 'no translation',
+        temiar: item.temiar,
+        english: item.english,
+        topic: item.topic,
+        PK: item.PK,
+        SK: item.SK
+      }));
 
       return {
         statusCode: 200,
-        body: JSON.stringify({ items: result.Items }),
+        body: JSON.stringify({ items: transformedItems }),
         headers: {
           "Access-Control-Allow-Origin": "*",
         },
