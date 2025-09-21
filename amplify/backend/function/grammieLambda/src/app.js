@@ -25,9 +25,9 @@ if (process.env.ENV && process.env.ENV !== "NONE") {
 
 const userIdPresent = false; // TODO: update in case is required to use that definition
 const partitionKeyName = "PK";
-const partitionKeyType = "SK";
-const sortKeyName = "";
-const sortKeyType = "";
+const partitionKeyType = "S";
+const sortKeyName = "SK";
+const sortKeyType = "S";
 const hasSortKey = sortKeyName !== "";
 const path = "/grsmmie";
 const UNAUTH = 'UNAUTH';
@@ -183,6 +183,9 @@ app.put(path, async function(req, res) {
 *************************************/
 
 app.post(path, async function(req, res) {
+  console.log('=== DynamoDB POST Endpoint Called ===');
+  console.log('URL:', req.url);
+  console.log('Body:', req.body);
 
   if (userIdPresent) {
     req.body['userId'] = req.apiGateway.event.requestContext.identity.cognitoIdentityId || UNAUTH;
@@ -194,7 +197,14 @@ app.post(path, async function(req, res) {
   }
   try {
     let data = await ddbDocClient.send(new PutCommand(putItemParams));
-    res.json({ success: 'post call succeed!', url: req.url, data: data })
+    console.log('=== DynamoDB POST SUCCESS ===');
+    res.json({ 
+      success: 'DynamoDB item saved successfully!', 
+      message: 'This is the DynamoDB POST endpoint, not Bedrock!',
+      url: req.url, 
+      data: data,
+      warning: 'If you expected Bedrock, check your endpoint URL'
+    })
   } catch (err) {
     res.statusCode = 500;
     res.json({ error: err, url: req.url, body: req.body });
@@ -246,39 +256,160 @@ app.delete(path + '/object' + hashKeyPath + sortKeyPath, async function(req, res
 *************************************/
 
 app.post(path + '/bedrock-chat', async function(req, res) {
+  console.log('=== Bedrock Chat Endpoint Called ===');
+  console.log('Request body:', req.body);
+  
   try {
     const { prompt } = req.body;
+    console.log('Extracted prompt:', prompt);
     
     const input = {
-      modelId: "anthropic.claude-3-haiku-20240307-v1:0",
+      modelId: "openai.gpt-oss-120b-1:0",
       contentType: "application/json",
       accept: "application/json",
       body: JSON.stringify({
-        anthropic_version: "bedrock-2023-05-31",
-        max_tokens: 1000,
-        temperature: 0.5,
         messages: [
           {
             role: "user",
-            content: prompt || "Hello, how are you?"
+            content: prompt || "Hello, how are you? Please respond with a test message to confirm Bedrock is working."
           }
-        ]
+        ],
+        max_tokens: 1000,
+        temperature: 0.5
       })
     };
+    
+    console.log('Bedrock input:', input);
 
     const command = new InvokeModelCommand(input);
+    console.log('Sending command to Bedrock...');
+    
     const response = await bedrockClient.send(command);
+    console.log('Bedrock response received');
     
     const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+    console.log('Parsed response body:', responseBody);
     
     res.json({
       success: 'Bedrock chat successful!',
-      message: responseBody.content[0].text
+      message: responseBody.choices[0].message.content,
+      debug: {
+        prompt: prompt,
+        model: "openai.gpt-oss-120b-1:0",
+        timestamp: new Date().toISOString()
+      }
     });
   } catch (err) {
+    console.error('Bedrock chat error:', err);
     res.statusCode = 500;
-    res.json({ error: 'Bedrock chat failed: ' + err.message });
+    res.json({ 
+      error: 'Bedrock chat failed: ' + err.message,
+      debug: {
+        stack: err.stack,
+        timestamp: new Date().toISOString()
+      }
+    });
   }
+});
+
+/************************************
+* HTTP GET test endpoint for Bedrock *
+*************************************/
+
+app.get(path + '/test-bedrock', async function(req, res) {
+  console.log('=== Test Bedrock Endpoint Called ===');
+  
+  try {
+    const testPrompt = "Say 'Hello from Bedrock!' to test the connection.";
+    
+    const input = {
+      modelId: "openai.gpt-oss-120b-1:0",
+      contentType: "application/json",
+      accept: "application/json",
+      body: JSON.stringify({
+        messages: [
+          {
+            role: "user",
+            content: testPrompt
+          }
+        ],
+        max_tokens: 100,
+        temperature: 0.5
+      })
+    };
+    
+    console.log('Test Bedrock input:', input);
+
+    const command = new InvokeModelCommand(input);
+    console.log('Sending test command to Bedrock...');
+    
+    const response = await bedrockClient.send(command);
+    console.log('Test Bedrock response received');
+    
+    const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+    console.log('Test parsed response body:', responseBody);
+    
+    res.json({
+      success: 'Test Bedrock successful!',
+      message: responseBody.choices[0].message.content,
+      endpoints: {
+        bedrock_chat: path + '/bedrock-chat',
+        test_bedrock: path + '/test-bedrock',
+        main_path: path
+      },
+      debug: {
+        model: "openai.gpt-oss-120b-1:0",
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (err) {
+    console.error('Test Bedrock error:', err);
+    res.statusCode = 500;
+    res.json({ 
+      error: 'Test Bedrock failed: ' + err.message,
+      endpoints: {
+        bedrock_chat: path + '/bedrock-chat',
+        test_bedrock: path + '/test-bedrock',
+        main_path: path
+      },
+      debug: {
+        stack: err.stack,
+        timestamp: new Date().toISOString()
+      }
+    });
+  }
+});
+
+/************************************
+* Debug endpoint to show all routes *
+*************************************/
+
+app.get(path + '/debug-routes', function(req, res) {
+  console.log('=== Debug Routes Endpoint Called ===');
+  console.log('Base path:', path);
+  console.log('Full URL:', req.url);
+  console.log('Method:', req.method);
+  
+  res.json({
+    message: 'Debug endpoint working!',
+    available_endpoints: {
+      get_all_items: `GET ${path}`,
+      get_food_items: `GET ${path} (configured for food topic)`,
+      save_item_to_db: `POST ${path}`,
+      bedrock_chat: `POST ${path}/bedrock-chat`,
+      test_bedrock: `GET ${path}/test-bedrock`,
+      debug_routes: `GET ${path}/debug-routes`
+    },
+    current_request: {
+      url: req.url,
+      method: req.method,
+      base_path: path
+    },
+    instructions: {
+      for_bedrock: `POST to ${path}/bedrock-chat with {"prompt": "your message"}`,
+      for_testing: `GET ${path}/test-bedrock`
+    }
+  });
 });
 
 app.listen(3000, function() {

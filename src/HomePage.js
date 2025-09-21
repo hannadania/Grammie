@@ -88,8 +88,9 @@ function HomePage({ onStartApp }) {
     try {
       console.log("Starting Bedrock chat...");
       
+      // Using localhost for development testing
       const response = await fetch(
-        "https://q17d7ggx54.execute-api.ap-southeast-1.amazonaws.com/dev/grsmmie/bedrock-chat",
+        "http://localhost:3000/grsmmie/bedrock-chat",
         {
           method: "POST",
           headers: {
@@ -105,11 +106,45 @@ function HomePage({ onStartApp }) {
 
       const data = await response.json();
       console.log("Bedrock response:", data);
-      alert(`Bedrock says: ${data.message}`);
+      alert(`Bedrock says: ${data.message || data.success}`);
       
     } catch (error) {
       console.error("Error with Bedrock chat:", error);
       alert("Error with Bedrock chat. Check console.");
+    }
+  };
+
+  // Test Bedrock function (simpler test)
+  const testBedrock = async () => {
+    try {
+      console.log("Testing Bedrock...");
+      
+      const response = await fetch("http://localhost:3000/grsmmie/test-bedrock");
+      
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+      
+      // Get response as text first to see what we actually received
+      const responseText = await response.text();
+      console.log("Raw response text:", responseText);
+      
+      // Try to parse as JSON
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log("Parsed JSON data:", data);
+      } catch (parseError) {
+        console.error("JSON parse error:", parseError);
+        console.error("Response was not JSON:", responseText);
+        alert(`Server returned non-JSON response: ${responseText.substring(0, 200)}...`);
+        return;
+      }
+      
+      alert(`Test result: ${data.message || data.success || JSON.stringify(data)}`);
+      
+    } catch (error) {
+      console.error("Test error:", error);
+      alert(`Test failed: ${error.message}. Check console for details.`);
     }
   };
 
@@ -127,6 +162,7 @@ function HomePage({ onStartApp }) {
           <button onClick={fetchFromDynamoDB}>Fetch Items</button>
           <button onClick={testButton}>Test Query (Numbers)</button>
           <button onClick={startBedrockChat}>Start Bedrock Chat</button>
+          <button onClick={testBedrock} style={{backgroundColor: '#28a745'}}>Test Bedrock (Simple)</button>
         </div>
 
         <div className="results">
